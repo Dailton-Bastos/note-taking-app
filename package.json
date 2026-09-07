@@ -14,8 +14,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "test:ci": "turbo run test",
-    "test:projects": "vitest run",
-    "test:projects:watch": "vitest --watch",
+    "test:projects": "turbo run build --filter @repo/vitest-config && vitest run",
+    "test:projects:watch": "turbo run build --filter @repo/vitest-config && vitest --watch",
     "report": "turbo run test && turbo run report",
     "view-report": "turbo run test && turbo run view-report"
   },
