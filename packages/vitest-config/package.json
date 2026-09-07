@@ -16,12 +16,13 @@
     "check-types": "tsc --noEmit",
     "merge-blob-reports": "node dist/scripts/merge-blob-reports.js",
     "report": "vitest run --merge-reports coverage/merged-blob --passWithNoTests --coverage --coverage.provider=istanbul --coverage.reporter=html --coverage.reporter=text --coverage.reportsDirectory=coverage/report",
-    "view-report": "open coverage/report/index.html"
+    "view-report": "open-cli coverage/report/index.html"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@vitest/coverage-istanbul": "^5.0.0",
     "jsdom": "catalog:",
+    "open-cli": "^9.0.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
