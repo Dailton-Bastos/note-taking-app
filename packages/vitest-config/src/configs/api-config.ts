@@ -8,7 +8,7 @@ export const apiConfig = mergeConfig(
       root: './',
       environment: 'node',
     },
-  })
+  }),
 );
 
 export const apiE2EConfig = mergeConfig(
@@ -19,5 +19,5 @@ export const apiE2EConfig = mergeConfig(
       environment: 'node',
       include: ['**/*.e2e-spec.ts'],
     },
-  })
+  }),
 );

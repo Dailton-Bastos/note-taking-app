@@ -7,5 +7,5 @@ export const webConfig = mergeConfig(
     test: {
       environment: 'jsdom',
     },
-  })
+  }),
 );
