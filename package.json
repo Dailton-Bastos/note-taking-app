@@ -8,6 +8,7 @@
   },
   "type": "module",
   "scripts": {
+    "prepare": "husky",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "oxlint .",
@@ -15,6 +16,8 @@
     "format": "oxfmt --check",
     "format:fix": "oxfmt .",
     "check-types": "turbo run check-types",
+    "validate:commit": "pnpm exec lint-staged",
+    "validate:push": "turbo run build",
     "test:ci": "turbo run test",
     "test:projects": "turbo run build --filter @repo/vitest-config && vitest run",
     "test:projects:watch": "turbo run build --filter @repo/vitest-config && vitest --watch",
@@ -23,6 +26,8 @@
   },
   "devDependencies": {
     "@repo/vitest-config": "workspace:*",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.0",
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",
     "turbo": "^2.10.12",
