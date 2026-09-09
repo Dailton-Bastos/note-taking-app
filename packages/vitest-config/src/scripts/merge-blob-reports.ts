@@ -24,11 +24,7 @@ async function mergeBlobReports() {
       try {
         blobFiles = await fs.readdir(blobDir);
       } catch (error) {
-        if (
-          error instanceof Error &&
-          'code' in error &&
-          error.code === 'ENOENT'
-        ) {
+        if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
           continue;
         }
 
@@ -41,10 +37,7 @@ async function mergeBlobReports() {
         }
 
         const source = path.join(blobDir, blobFile);
-        const destination = path.join(
-          destinationDir,
-          `${workspaceDir}-${packageName}-${blobFile}`
-        );
+        const destination = path.join(destinationDir, `${workspaceDir}-${packageName}-${blobFile}`);
 
         await fs.copyFile(source, destination);
         copiedReports.push(path.relative(workspaceRoot, source));
@@ -55,11 +48,10 @@ async function mergeBlobReports() {
   if (copiedReports.length === 0) {
     throw new Error('No Vitest blob reports found. Run `pnpm test` first.');
   }
-
-  console.log(`Collected ${copiedReports.length} Vitest blob report(s).`);
 }
 
-mergeBlobReports().catch((error: unknown) => {
+mergeBlobReports().catch((error) => {
+  // oxlint-disable-next-line no-console
   console.error(error);
   process.exitCode = 1;
 });
