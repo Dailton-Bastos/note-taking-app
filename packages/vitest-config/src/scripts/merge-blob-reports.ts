@@ -50,6 +50,8 @@ async function mergeBlobReports() {
   }
 }
 
-mergeBlobReports().catch(() => {
+mergeBlobReports().catch((error) => {
+  // oxlint-disable-next-line no-console
+  console.error(error);
   process.exitCode = 1;
 });
