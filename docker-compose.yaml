@@ -1,0 +1,43 @@
+services:
+  setup:
+    container_name: setup
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    environment:
+      CI: 'true'
+    volumes:
+      - .:/usr/src/app
+    command: sh -lc "pnpm install"
+    restart: 'no'
+
+  workspace:
+    container_name: workspace
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    volumes:
+      - .:/usr/src/app
+    command: /bin/zsh -c "tail -f /dev/null"
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'sh',
+          '-lc',
+          'test -d /usr/src/app/node_modules && test -f /usr/src/app/pnpm-lock.yaml',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: 'no'
+
+networks:
+  default:
+    name: app-network
+    driver: bridge
