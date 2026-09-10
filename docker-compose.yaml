@@ -37,6 +37,45 @@ services:
       start_period: 10s
     restart: 'no'
 
+  api:
+    container_name: api
+    build:
+      context: .
+      target: dev
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - ./apps/api/.env
+    depends_on:
+      workspace:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+
+  web:
+    container_name: web
+    build:
+      context: .
+      target: dev
+      dockerfile: apps/web/Dockerfile
+    env_file:
+      - ./apps/web/.env
+    depends_on:
+      workspace:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '5173:5173'
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /usr/src/app
+
 networks:
   default:
     name: app-network
