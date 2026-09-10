@@ -28,8 +28,8 @@ export default {
   // Handle apps separately with proper directory context
   'apps/**/*.{js,jsx,ts,tsx}': (filenames) => {
     const filesByApp = filenames.reduce((acc, filename) => {
-      // Normalize slashes for Windows compatibility if running locally
-      const posixPath = filename.replace(/\\/g, '/');
+      // Convert lint-staged's absolute path to a root-relative POSIX path.
+      const posixPath = path.relative(process.cwd(), filename).replace(/\\/g, '/');
       const match = posixPath.match(/^apps\/([^/]+)\/(.+)/);
       if (!match) return acc;
 
@@ -61,12 +61,9 @@ export default {
   // Handle packages separately
   'packages/**/*.{js,jsx,ts,tsx}': (filenames) => {
     const filesByPackage = filenames.reduce((acc, filename) => {
-      const posixPath = filename.replace(/\\/g, '/');
+      const posixPath = path.relative(process.cwd(), filename).replace(/\\/g, '/');
       const match = posixPath.match(/^packages\/([^/]+)\/(.+)/);
       if (!match) return acc;
-
-      // Skip internal configuration packages that don't need code linting
-      if (match[1] === 'typescript-config' || match[1] === 'vitest-config') return acc;
 
       const pkgName = match[1];
       if (!acc[pkgName]) acc[pkgName] = [];
