@@ -16,7 +16,7 @@
     "format": "oxfmt --check",
     "format:fix": "oxfmt .",
     "check-types": "turbo run check-types",
-    "validate:commit": "pnpm exec lint-staged",
+    "validate:commit": "pnpm exec lint-staged --concurrent false",
     "validate:push": "turbo run build",
     "test:ci": "turbo run test",
     "test:projects": "turbo run build --filter @repo/vitest-config && vitest run",
