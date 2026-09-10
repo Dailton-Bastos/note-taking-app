@@ -55,7 +55,7 @@ export default {
       Boolean,
     );
     const quotedFiles = uniqueFiles.map(quoteForShell).join(' ');
-    return [`pnpm vitest run -- ${quotedFiles}`];
+    return [`pnpm test:projects -- ${quotedFiles}`];
   },
 
   // Handle packages separately
