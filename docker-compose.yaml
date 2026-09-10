@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    user: root
+    user: '${UID:-1000}:${GID:-1000}'
     environment:
       CI: 'true'
     volumes:
@@ -17,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    user: '${UID:-1000}:${GID:-1000}'
     depends_on:
       setup:
         condition: service_completed_successfully
