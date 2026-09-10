@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 // Safely escape filenames for the shell execution
@@ -11,15 +12,13 @@ const buildLintCommands = (dir, files) => {
   const quotedDir = quoteForShell(dir);
   const quotedFiles = files.map(quoteForShell).join(' ');
   const hasTypeScriptFiles = files.some((file) => /\.(?:ts|tsx)$/.test(file));
+  const hasTsConfig = fs.existsSync(path.join(dir, 'tsconfig.json'));
 
   return [
-    // cd into the specific app/package directory so local configs are picked up
-    `bash -c "cd ${quotedDir} && pnpm oxlint --fix ${quotedFiles}"`,
-    `bash -c "cd ${quotedDir} && pnpm oxfmt --no-error-on-unmatched-pattern ${quotedFiles}"`,
-    ...(hasTypeScriptFiles
-      ? [
-          `bash -c "cd ${quotedDir} && if [ -f tsconfig.json ]; then pnpm exec tsc --noEmit -p tsconfig.json; fi"`,
-        ]
+    `pnpm --dir ${quotedDir} oxlint --fix ${quotedFiles}`,
+    `pnpm --dir ${quotedDir} oxfmt --no-error-on-unmatched-pattern ${quotedFiles}`,
+    ...(hasTypeScriptFiles && hasTsConfig
+      ? [`pnpm --dir ${quotedDir} exec tsc --noEmit -p tsconfig.json`]
       : []),
   ];
 };
