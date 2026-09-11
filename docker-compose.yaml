@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        UID: '${UID:-1000}'
+        GID: '${GID:-1000}'
     user: '${UID:-1000}:${GID:-1000}'
     environment:
       CI: 'true'
@@ -17,6 +20,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        UID: '${UID:-1000}'
+        GID: '${GID:-1000}'
     user: '${UID:-1000}:${GID:-1000}'
     depends_on:
       setup:
@@ -45,7 +51,8 @@ services:
       target: dev
       dockerfile: apps/api/Dockerfile
     env_file:
-      - ./apps/api/.env
+      - path: ./apps/api/.env
+        required: true
     depends_on:
       workspace:
         condition: service_healthy
@@ -62,7 +69,8 @@ services:
       target: dev
       dockerfile: apps/web/Dockerfile
     env_file:
-      - ./apps/web/.env
+      - path: ./apps/web/.env
+        required: false
     depends_on:
       workspace:
         condition: service_healthy
