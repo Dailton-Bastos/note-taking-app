@@ -23,7 +23,10 @@
     "test:projects:watch": "turbo run build --filter @repo/vitest-config && vitest --watch",
     "report": "turbo run test && turbo run report",
     "view-report": "turbo run test && turbo run view-report",
-    "commitlint": "commitlint --edit"
+    "commitlint": "commitlint --edit",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down -v",
+    "docker:exec": "docker exec -it workspace /bin/zsh"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",
@@ -38,7 +41,7 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=24.20.0"
   },
   "packageManager": "pnpm@12.3.4"
 }

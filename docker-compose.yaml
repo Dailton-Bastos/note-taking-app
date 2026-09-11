@@ -1,0 +1,91 @@
+services:
+  setup:
+    container_name: setup
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: '${UID:-1000}'
+        GID: '${GID:-1000}'
+    user: '${UID:-1000}:${GID:-1000}'
+    environment:
+      CI: 'true'
+    volumes:
+      - .:/usr/src/app
+    command: sh -lc "pnpm install"
+    restart: 'no'
+
+  workspace:
+    container_name: workspace
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        UID: '${UID:-1000}'
+        GID: '${GID:-1000}'
+    user: '${UID:-1000}:${GID:-1000}'
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    volumes:
+      - .:/usr/src/app
+    command: /bin/zsh -c "tail -f /dev/null"
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'sh',
+          '-lc',
+          'test -d /usr/src/app/node_modules && test -f /usr/src/app/pnpm-lock.yaml',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: 'no'
+
+  api:
+    container_name: api
+    build:
+      context: .
+      target: dev
+      dockerfile: apps/api/Dockerfile
+    env_file:
+      - path: ./apps/api/.env
+        required: true
+    depends_on:
+      workspace:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+
+  web:
+    container_name: web
+    build:
+      context: .
+      target: dev
+      dockerfile: apps/web/Dockerfile
+    env_file:
+      - path: ./apps/web/.env
+        required: false
+    depends_on:
+      workspace:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - '5173:5173'
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /usr/src/app
+
+networks:
+  default:
+    name: app-network
+    driver: bridge
