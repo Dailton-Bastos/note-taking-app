@@ -29,7 +29,7 @@ jobs:
 
       # Runs root lint/format, package builds, and tests in optimal graph order
       - name: Run Pipeline Tasks
-        run: pnpm turbo run //#quality build test --filter=[origin/main...HEAD]
+        run: pnpm turbo run //#quality build test --affected
 
   # Job 2: Validate git history separately
   conventional-commits:
