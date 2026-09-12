@@ -3,13 +3,16 @@ description: 'Action to set up Node.js dependencies using pnpm'
 runs:
   using: 'composite'
   steps:
-    - name: Setup Runtime & Dependencies
-      uses: pnpm/setup@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        # Installs Node.js based on the `packageManager` or `devEngines`
-        # field inside your project's package.json
-        # Automatically enables global pnpm store caching
-        cache: true
+        node-version: 24.20.0
+        cache: pnpm
+        cache-dependency-path: pnpm-lock.yaml
 
-        # Forces the automated setup to run `pnpm install --frozen-lockfile`
-        frozen-lockfile: true
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      shell: bash

@@ -41,6 +41,9 @@ jobs:
         with:
           fetch-depth: 0 # Deep clone strictly required for history validation
 
+      - name: Set up Node.js dependencies
+        uses: ./.github/actions/setup-node-dependencies
+
       - name: Validate all commits follow conventional commits
         uses: wagoid/commitlint-github-action@v6
         with:
