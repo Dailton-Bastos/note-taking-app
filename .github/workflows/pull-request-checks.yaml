@@ -14,81 +14,53 @@ on:
       - reopened
 
 jobs:
-  lint-format:
-    name: 'Lint and Format Checks'
+  # Job 1: Quality, Build, and Test (Consolidated for optimal caching)
+  pipeline:
+    name: 'Workspace Pipeline'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2 # Required for Turborepo's git diff filtering
 
       - name: Set up Node.js dependencies
         uses: ./.github/actions/setup-node-dependencies
 
-      - name: Run lint and format checks
-        run: pnpm turbo run //#quality --affected
+      # Runs root lint/format, package builds, and tests in optimal graph order
+      - name: Run Pipeline Tasks
+        run: pnpm turbo run //#quality build test --filter=[origin/main...HEAD]
 
-  test:
-    name: 'Run Tests'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node.js dependencies
-        uses: ./.github/actions/setup-node-dependencies
-
-      - name: Run tests
-        run: pnpm turbo test --affected
-
-  build:
-    name: 'Build'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Set up Node.js dependencies
-        uses: ./.github/actions/setup-node-dependencies
-
-      - name: Run build
-        run: pnpm turbo build --affected
-
+  # Job 2: Validate git history separately
   conventional-commits:
     name: 'Conventional Commits Check'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Deep clone strictly required for history validation
 
       - name: Validate all commits follow conventional commits
         uses: wagoid/commitlint-github-action@v6
         with:
           configFile: commitlint.config.mjs
           failOnWarnings: true
-          helpUrl: https://www.conventionalcommits.org
+          helpUrl: https://conventionalcommits.org
 
+  # Job 3: Protected branch status gate
   all-checks-pass:
     name: 'All Checks Pass'
     if: ${{ always() }}
     runs-on: ubuntu-latest
     needs:
-      - lint-format
-      - test
-      - build
+      - pipeline
       - conventional-commits
     steps:
       - name: Verify all checks pass
         if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: |
-          echo "One or more checks have failed or been cancelled."
+          echo "One or more pipeline checks have failed or been cancelled."
           exit 1
 
       - name: All checks passed
