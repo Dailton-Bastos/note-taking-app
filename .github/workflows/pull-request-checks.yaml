@@ -67,6 +67,7 @@ jobs:
       - name: Validate all commits follow conventional commits
         uses: wagoid/commitlint-github-action@v6
         with:
+          configFile: commitlint.config.mjs
           failOnWarnings: true
           helpUrl: https://www.conventionalcommits.org
 
