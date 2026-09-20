@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsc && pnpm build:styles",
-    "dev": "concurrently --kill-others-on-fail \"pnpm build --watch\" \"pnpm dev:styles\"",
+    "dev": "concurrently --kill-others-on-fail \"tsc --watch\" \"pnpm dev:styles\"",
     "check-types": "tsc --noEmit",
     "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch"
