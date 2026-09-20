@@ -16,4 +16,4 @@ WORKDIR /usr/src/app
 
 EXPOSE 5173
 
-CMD ["pnpm", "turbo", "dev", "--filter=web"]
+CMD ["pnpm", "dev:web"]

@@ -1,7 +1,11 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+allowBuilds:
+  '@parcel/watcher': false
 catalog:
+  '@types/react': ^19.3.0
   jsdom: ^30.0.1
+  tailwindcss: ^4.3.3
   typescript: ^6.0.2
   vitest: ^5.0.0

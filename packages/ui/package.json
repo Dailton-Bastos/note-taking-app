@@ -1,0 +1,37 @@
+{
+  "name": "@repo/ui",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./styles.css": "./dist/index.css",
+    "./*": "./dist/*.js"
+  },
+  "scripts": {
+    "build": "tsc && pnpm build:styles",
+    "dev": "concurrently --kill-others-on-fail \"tsc --watch\" \"pnpm dev:styles\"",
+    "check-types": "tsc --noEmit",
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch"
+  },
+  "devDependencies": {
+    "@repo/tailwind-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/cli": "^4.3.3",
+    "@types/react": "catalog:",
+    "concurrently": "^10.0.5",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  }
+}
