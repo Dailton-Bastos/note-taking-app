@@ -16,7 +16,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
+    "dev": "concurrently --kill-others-on-fail \"pnpm build --watch\" \"pnpm dev:styles\"",
     "check-types": "tsc --noEmit",
     "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch"
@@ -26,7 +26,12 @@
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/cli": "^4.3.3",
     "@types/react": "catalog:",
+    "concurrently": "^10.0.5",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   }
 }

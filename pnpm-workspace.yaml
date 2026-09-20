@@ -2,7 +2,7 @@ packages:
   - 'apps/*'
   - 'packages/*'
 allowBuilds:
-  '@parcel/watcher': set this to true or false
+  '@parcel/watcher': false
 catalog:
   '@types/react': ^19.3.0
   jsdom: ^30.0.1

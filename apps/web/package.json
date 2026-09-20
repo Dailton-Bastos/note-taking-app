@@ -11,13 +11,13 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@repo/ui": "workspace:*",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@repo/ui": "workspace:*",
     "@repo/vitest-config": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.13.3",
