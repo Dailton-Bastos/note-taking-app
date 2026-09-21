@@ -14,4 +14,4 @@ RUN corepack enable \
 
 WORKDIR /usr/src/app
 
-CMD ["pnpm", "turbo", "dev", "--filter=api"]
+CMD ["pnpm", "dev:api"]
