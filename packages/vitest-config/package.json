@@ -8,7 +8,8 @@
     ".": "./dist/index.js",
     "./base": "./dist/configs/base-config.js",
     "./api": "./dist/configs/api-config.js",
-    "./web": "./dist/configs/web-config.js"
+    "./web": "./dist/configs/web-config.js",
+    "./schemas": "./dist/configs/schemas-config.js"
   },
   "scripts": {
     "build": "tsc",
