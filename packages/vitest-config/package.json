@@ -9,7 +9,7 @@
     "./base": "./dist/configs/base-config.js",
     "./api": "./dist/configs/api-config.js",
     "./web": "./dist/configs/web-config.js",
-    "./schemas": "./dist/configs/schemas-config.js"
+    "./schemas": "./dist/configs/schema-config.js"
   },
   "scripts": {
     "build": "tsc",
