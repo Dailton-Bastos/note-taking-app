@@ -15,3 +15,4 @@ export const sharedConfig = {
 export { baseConfig } from './configs/base-config.js';
 export { apiConfig, apiE2EConfig } from './configs/api-config.js';
 export { webConfig } from './configs/web-config.js';
+export { schemaConfig } from './configs/schema-config.js';
