@@ -10,8 +10,9 @@
   "scripts": {
     "prepare": "husky",
     "build": "turbo run build",
-    "dev": "pnpm --filter=@repo/ui build && turbo run dev",
-    "dev:web": "pnpm --filter=@repo/ui build && turbo run dev --filter=web --filter=@repo/ui",
+    "dev": "pnpm --filter=@repo/schemas build && pnpm --filter=@repo/ui build && turbo run dev --filter=api --filter=web --filter=@repo/schemas --filter=@repo/ui",
+    "dev:api": "pnpm --filter=@repo/schemas build && turbo run dev --filter=api --filter=@repo/schemas",
+    "dev:web": "pnpm --filter=@repo/schemas build && pnpm --filter=@repo/ui build && turbo run dev --filter=web --filter=@repo/schemas --filter=@repo/ui",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
     "format": "oxfmt --check",
