@@ -7,12 +7,30 @@ services:
       args:
         UID: '${UID:-1000}'
         GID: '${GID:-1000}'
-    user: '${UID:-1000}:${GID:-1000}'
+    user: root
     environment:
       CI: 'true'
     volumes:
       - .:/usr/src/app
-    command: sh -lc "pnpm install"
+      - root_node_modules:/usr/src/app/node_modules
+      - api_node_modules:/usr/src/app/apps/api/node_modules
+      - web_node_modules:/usr/src/app/apps/web/node_modules
+      - schemas_node_modules:/usr/src/app/packages/schemas/node_modules
+      - tailwind_config_node_modules:/usr/src/app/packages/tailwind-config/node_modules
+      - typescript_config_node_modules:/usr/src/app/packages/typescript-config/node_modules
+      - ui_node_modules:/usr/src/app/packages/ui/node_modules
+      - vitest_config_node_modules:/usr/src/app/packages/vitest-config/node_modules
+    command: >-
+      sh -lc "chown -R ${UID:-1000}:${GID:-1000}
+      /usr/src/app/node_modules
+      /usr/src/app/apps/api/node_modules
+      /usr/src/app/apps/web/node_modules
+      /usr/src/app/packages/schemas/node_modules
+      /usr/src/app/packages/tailwind-config/node_modules
+      /usr/src/app/packages/typescript-config/node_modules
+      /usr/src/app/packages/ui/node_modules
+      /usr/src/app/packages/vitest-config/node_modules
+      && su node -s /bin/sh -c 'pnpm install'"
     restart: 'no'
 
   workspace:
@@ -29,6 +47,14 @@ services:
         condition: service_completed_successfully
     volumes:
       - .:/usr/src/app
+      - root_node_modules:/usr/src/app/node_modules
+      - api_node_modules:/usr/src/app/apps/api/node_modules
+      - web_node_modules:/usr/src/app/apps/web/node_modules
+      - schemas_node_modules:/usr/src/app/packages/schemas/node_modules
+      - tailwind_config_node_modules:/usr/src/app/packages/tailwind-config/node_modules
+      - typescript_config_node_modules:/usr/src/app/packages/typescript-config/node_modules
+      - ui_node_modules:/usr/src/app/packages/ui/node_modules
+      - vitest_config_node_modules:/usr/src/app/packages/vitest-config/node_modules
     command: /bin/zsh -c "tail -f /dev/null"
     healthcheck:
       test:
@@ -58,6 +84,14 @@ services:
         condition: service_healthy
     volumes:
       - .:/usr/src/app
+      - root_node_modules:/usr/src/app/node_modules
+      - api_node_modules:/usr/src/app/apps/api/node_modules
+      - web_node_modules:/usr/src/app/apps/web/node_modules
+      - schemas_node_modules:/usr/src/app/packages/schemas/node_modules
+      - tailwind_config_node_modules:/usr/src/app/packages/tailwind-config/node_modules
+      - typescript_config_node_modules:/usr/src/app/packages/typescript-config/node_modules
+      - ui_node_modules:/usr/src/app/packages/ui/node_modules
+      - vitest_config_node_modules:/usr/src/app/packages/vitest-config/node_modules
     ports:
       - '3000:3000'
     restart: unless-stopped
@@ -76,6 +110,14 @@ services:
         condition: service_healthy
     volumes:
       - .:/usr/src/app
+      - root_node_modules:/usr/src/app/node_modules
+      - api_node_modules:/usr/src/app/apps/api/node_modules
+      - web_node_modules:/usr/src/app/apps/web/node_modules
+      - schemas_node_modules:/usr/src/app/packages/schemas/node_modules
+      - tailwind_config_node_modules:/usr/src/app/packages/tailwind-config/node_modules
+      - typescript_config_node_modules:/usr/src/app/packages/typescript-config/node_modules
+      - ui_node_modules:/usr/src/app/packages/ui/node_modules
+      - vitest_config_node_modules:/usr/src/app/packages/vitest-config/node_modules
     ports:
       - '5173:5173'
     restart: unless-stopped
@@ -89,3 +131,13 @@ networks:
   default:
     name: app-network
     driver: bridge
+
+volumes:
+  root_node_modules:
+  api_node_modules:
+  web_node_modules:
+  schemas_node_modules:
+  tailwind_config_node_modules:
+  typescript_config_node_modules:
+  ui_node_modules:
+  vitest_config_node_modules:
