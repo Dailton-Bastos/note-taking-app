@@ -135,6 +135,7 @@ services:
       - '127.0.0.1:5432:5432'
     environment:
       - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=note-taking-app
       - PGDATA=/var/lib/postgresql/data
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -165,7 +166,7 @@ services:
         uid: '5050'
         gid: '5050'
     ports:
-      - '8080:80'
+      - '127.0.0.1:8080:80'
     depends_on:
       postgres:
         condition: service_healthy
