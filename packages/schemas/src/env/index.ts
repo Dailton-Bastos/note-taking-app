@@ -13,5 +13,5 @@ export const validationApiSchema = z.object({
   PORT: z.coerce.number<number>().default(3000),
   POSTGRES_URL: z
     .string()
-    .regex(/^(postgresql|postgres):\/\/.*$/, 'Invalid PostgreSQL connection string'),
+    .regex(/^(postgresql|postgres):\/\/.+$/, 'Invalid PostgreSQL connection string'),
 });
