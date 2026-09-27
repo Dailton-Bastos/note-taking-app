@@ -27,7 +27,7 @@
     "view-report": "turbo run test && turbo run view-report",
     "commitlint": "commitlint --edit",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down -v",
+    "docker:down": "docker compose down",
     "docker:exec": "docker exec -it workspace /bin/zsh"
   },
   "devDependencies": {
