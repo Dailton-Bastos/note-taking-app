@@ -6,6 +6,7 @@ import {
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
 import { DatabaseHealthIndicator } from '../database/database.health.js';
+import { EnvService } from '../env/env.service.js';
 
 @Controller('health')
 export class HealthController {
@@ -14,6 +15,7 @@ export class HealthController {
     private readonly disk: DiskHealthIndicator,
     private readonly memory: MemoryHealthIndicator,
     private readonly database: DatabaseHealthIndicator,
+    private readonly envService: EnvService,
   ) {}
 
   @Get()
@@ -21,9 +23,13 @@ export class HealthController {
   check() {
     return this.health.check([
       // TODO: Add HTTP health check once the web URL is available
-      () => this.disk.checkStorage('storage', { path: '/', threshold: 250 * 1024 * 1024 * 1024 }),
-      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
-      () => this.memory.checkRSS('memory_rss', 300 * 1024 * 1024),
+      () =>
+        this.disk.checkStorage('storage', {
+          path: '/',
+          threshold: this.envService.get('HEALTH_DISK_THRESHOLD'),
+        }),
+      () => this.memory.checkHeap('memory_heap', this.envService.get('HEALTH_HEAP_THRESHOLD')),
+      () => this.memory.checkRSS('memory_rss', this.envService.get('HEALTH_RSS_THRESHOLD')),
       () => this.database.pingCheck('database'),
     ]);
   }

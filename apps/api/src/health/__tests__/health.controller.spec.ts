@@ -8,9 +8,11 @@ import {
 } from '@nestjs/terminus';
 import { HealthController } from '../health.controller.js';
 import { DatabaseHealthIndicator } from '../../database/database.health.js';
+import { EnvService } from '../../env/env.service.js';
 
 describe('HealthController', () => {
   let controller: HealthController;
+  let envService: EnvService;
 
   const mockHealthCheckService = {
     check: vi.fn(),
@@ -49,14 +51,20 @@ describe('HealthController', () => {
           provide: DatabaseHealthIndicator,
           useValue: mockDatabaseHealthIndicator,
         },
+        {
+          provide: EnvService,
+          useValue: { get: vi.fn() },
+        },
       ],
     }).compile();
 
     controller = module.get<HealthController>(HealthController);
+    envService = module.get<EnvService>(EnvService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+    expect(envService).toBeDefined();
   });
 
   describe('check', () => {
@@ -84,17 +92,17 @@ describe('HealthController', () => {
 
       expect(mockDiskHealthIndicator.checkStorage).toHaveBeenCalledWith('storage', {
         path: '/',
-        threshold: 250 * 1024 * 1024 * 1024,
+        threshold: envService.get('HEALTH_DISK_THRESHOLD'),
       });
 
       expect(mockMemoryHealthIndicator.checkHeap).toHaveBeenCalledWith(
         'memory_heap',
-        150 * 1024 * 1024,
+        envService.get('HEALTH_HEAP_THRESHOLD'),
       );
 
       expect(mockMemoryHealthIndicator.checkRSS).toHaveBeenCalledWith(
         'memory_rss',
-        300 * 1024 * 1024,
+        envService.get('HEALTH_RSS_THRESHOLD'),
       );
 
       expect(mockDatabaseHealthIndicator.pingCheck).toHaveBeenCalledWith('database');
