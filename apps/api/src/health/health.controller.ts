@@ -26,7 +26,7 @@ export class HealthController {
       () =>
         this.disk.checkStorage('storage', {
           path: '/',
-          threshold: this.envService.get('HEALTH_DISK_THRESHOLD'),
+          thresholdPercent: this.envService.get('HEALTH_DISK_THRESHOLD_PERCENT'),
         }),
       () => this.memory.checkHeap('memory_heap', this.envService.get('HEALTH_HEAP_THRESHOLD')),
       () => this.memory.checkRSS('memory_rss', this.envService.get('HEALTH_RSS_THRESHOLD')),

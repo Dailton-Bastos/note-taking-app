@@ -31,6 +31,18 @@ describe('HealthController', () => {
     pingCheck: vi.fn(),
   };
 
+  const mockEnvService = {
+    get: vi.fn((key: string) => {
+      const thresholds: Record<string, number> = {
+        HEALTH_DISK_THRESHOLD_PERCENT: 0.5,
+        HEALTH_HEAP_THRESHOLD: 150 * 1024 * 1024,
+        HEALTH_RSS_THRESHOLD: 300 * 1024 * 1024,
+      };
+
+      return thresholds[key];
+    }),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
@@ -53,7 +65,7 @@ describe('HealthController', () => {
         },
         {
           provide: EnvService,
-          useValue: { get: vi.fn() },
+          useValue: mockEnvService,
         },
       ],
     }).compile();
@@ -92,7 +104,7 @@ describe('HealthController', () => {
 
       expect(mockDiskHealthIndicator.checkStorage).toHaveBeenCalledWith('storage', {
         path: '/',
-        threshold: envService.get('HEALTH_DISK_THRESHOLD'),
+        thresholdPercent: envService.get('HEALTH_DISK_THRESHOLD_PERCENT'),
       });
 
       expect(mockMemoryHealthIndicator.checkHeap).toHaveBeenCalledWith(
