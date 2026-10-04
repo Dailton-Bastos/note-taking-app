@@ -14,4 +14,13 @@ export const validationApiSchema = z.object({
   POSTGRES_URL: z
     .string()
     .regex(/^(postgresql|postgres):\/\/.+$/, 'Invalid PostgreSQL connection string'),
+  HEALTH_RSS_THRESHOLD: z.coerce
+    .number<number>()
+    .positive()
+    .default(300 * 1024 * 1024),
+  HEALTH_HEAP_THRESHOLD: z.coerce
+    .number<number>()
+    .positive()
+    .default(150 * 1024 * 1024),
+  HEALTH_DISK_THRESHOLD_PERCENT: z.coerce.number<number>().positive().default(0.5),
 });

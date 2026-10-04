@@ -5,6 +5,7 @@ import { validate } from './env/env.validation.js';
 import { EnvModule } from './env/env.module.js';
 import { DatabaseConfigModule } from './database/database.config.module.js';
 import { DrizzleConfigService } from './database/drizzle.config.service.js';
+import { HealthModule } from './health/health.module.js';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DrizzleConfigService } from './database/drizzle.config.service.js';
       useExisting: DrizzleConfigService,
     }),
     EnvModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [],
