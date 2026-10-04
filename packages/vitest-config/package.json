@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@vitest/coverage-istanbul": "^5.0.0",
+    "@vitest/coverage-istanbul": "catalog:",
     "jsdom": "catalog:",
     "open-cli": "^9.0.0",
     "typescript": "catalog:",
