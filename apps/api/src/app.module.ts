@@ -6,6 +6,7 @@ import { EnvModule } from './env/env.module.js';
 import { DatabaseConfigModule } from './database/database.config.module.js';
 import { DrizzleConfigService } from './database/drizzle.config.service.js';
 import { HealthModule } from './health/health.module.js';
+import { UsersModule } from './users/users.module.js';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HealthModule } from './health/health.module.js';
     }),
     EnvModule,
     HealthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
