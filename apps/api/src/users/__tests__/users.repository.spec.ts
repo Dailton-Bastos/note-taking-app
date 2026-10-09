@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getDrizzleToken } from '@nestjs/drizzle';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { UsersRepository } from '../users.repository.js';
-import type { User } from '@repo/schemas';
+import type { User, SignUpDto } from '@repo/schemas';
 import type { Database } from '../../database/database';
 
 describe('UsersRepository', () => {
@@ -11,11 +11,13 @@ describe('UsersRepository', () => {
 
   let mockDb: {
     select: ReturnType<typeof vi.fn>;
+    insert: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     mockDb = {
       select: vi.fn().mockReturnThis(),
+      insert: vi.fn().mockReturnThis(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -71,6 +73,43 @@ describe('UsersRepository', () => {
       const result = await repository.findByEmail({ email });
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('create', () => {
+    it('should create a new user', async () => {
+      const newUser = { email: 'test@example.com', password: 'password123' } as SignUpDto;
+
+      const insertSpy = vi.spyOn(mockDb, 'insert');
+
+      insertSpy.mockReturnValueOnce({
+        values: vi.fn().mockReturnThis(),
+        onConflictDoNothing: vi.fn().mockReturnThis(),
+        returning: vi.fn().mockResolvedValueOnce([newUser]),
+      });
+
+      const result = await repository.create({
+        email: 'test@example.com',
+        password: 'password123',
+      });
+
+      expect(result).toEqual(newUser);
+      expect(insertSpy).toHaveBeenCalled();
+    });
+
+    it('should throw an error if the user could not be created', async () => {
+      const insertSpy = vi.spyOn(mockDb, 'insert');
+
+      insertSpy.mockReturnValueOnce({
+        values: vi.fn().mockReturnThis(),
+        onConflictDoNothing: vi.fn().mockReturnThis(),
+        returning: vi.fn().mockResolvedValueOnce([]),
+      });
+
+      const newUser = { email: 'test@example.com', password: 'password123' } as SignUpDto;
+
+      await expect(repository.create(newUser)).rejects.toThrow();
+      expect(insertSpy).toHaveBeenCalled();
     });
   });
 });
