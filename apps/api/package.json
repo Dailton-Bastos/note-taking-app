@@ -19,7 +19,8 @@
     "test:debug": "vitest --inspect-brk --no-file-parallelism",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts --name=${MIGRATION_NAME}",
-    "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts"
+    "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
+    "db:migrate-test": "drizzle-kit migrate --config=drizzle-testing.config.ts"
   },
   "dependencies": {
     "@nestjs/authentication": "^0.0.1",
