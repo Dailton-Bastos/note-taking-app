@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
 import { eq } from 'drizzle-orm';
 import type { User, SignUpDto } from '@repo/schemas';
@@ -18,13 +18,14 @@ export class UsersRepository {
   }
 
   async create({ email, password }: SignUpDto): Promise<User> {
-    const [user] = await this.db
-      .insert(users)
-      .values({ email, password })
-      .onConflictDoNothing()
-      .returning();
+    const [user] = await this.db.insert(users).values({ email, password }).returning({
+      id: users.id,
+      email: users.email,
+      createdAt: users.createdAt,
+      updatedAt: users.updatedAt,
+    });
 
-    if (!user) throw new Error('User could not be created');
+    if (!user) throw new ConflictException('Email already exists');
 
     return user;
   }
