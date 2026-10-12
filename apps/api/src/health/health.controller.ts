@@ -5,9 +5,11 @@ import {
   DiskHealthIndicator,
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
+import { Public } from '@nestjs/authentication';
 import { DatabaseHealthIndicator } from '../database/database.health.js';
 import { EnvService } from '../env/env.service.js';
 
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(
