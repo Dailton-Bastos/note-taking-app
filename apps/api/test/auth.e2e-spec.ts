@@ -50,6 +50,10 @@ describe('AuthController (e2e)', () => {
     });
 
     it('should not sign up a user with an existing email', async () => {
+      await db.delete(users).where(eq(users.email, signUpDto.email));
+
+      await request(app.getHttpServer()).post('/api/auth/sign-up').send(signUpDto);
+
       const response = await request(app.getHttpServer()).post('/api/auth/sign-up').send(signUpDto);
 
       expect(response.status).toBe(409);
