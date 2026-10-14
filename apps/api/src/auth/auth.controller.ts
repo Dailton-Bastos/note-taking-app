@@ -28,7 +28,7 @@ export class AuthController {
   })
   @ApiConflictResponse({
     description: 'Email is already in use.',
-    example: new ConflictException('Email is already in use.').getResponse(),
+    example: new ConflictException('Email is already in use').getResponse(),
   })
   async signUp(@Body({ schema: signUpSchema }) { email, password }: SignUpDto) {
     return this.credentialsService.register({ email, password });
