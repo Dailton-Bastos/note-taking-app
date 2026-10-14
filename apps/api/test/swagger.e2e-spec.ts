@@ -55,8 +55,17 @@ describe('Swagger (e2e)', () => {
     it('should serve the Swagger JSON document', async () => {
       const response = await request(app.getHttpServer()).get('/api-json');
       expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('openapi', '3.0.0');
       expect(response.body.paths['/api/health']).toBeDefined();
+      expect(response.body.paths['/api/auth/sign-up']).toMatchObject({
+        post: {
+          requestBody: expect.objectContaining({ content: expect.anything() }),
+          responses: expect.objectContaining({
+            '201': expect.anything(),
+            '400': expect.anything(),
+            '409': expect.anything(),
+          }),
+        },
+      });
     });
   });
 
