@@ -3,6 +3,7 @@ packages:
   - 'packages/*'
 allowBuilds:
   '@parcel/watcher': false
+  '@scarf/scarf': false
   esbuild: true
 catalog:
   '@types/react': ^19.3.0

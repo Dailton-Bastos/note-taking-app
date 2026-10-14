@@ -6,6 +6,7 @@ import {
   MemoryHealthIndicator,
 } from '@nestjs/terminus';
 import { Public } from '@nestjs/authentication';
+import { ApiOperation } from '@nestjs/swagger';
 import { DatabaseHealthIndicator } from '../database/database.health.js';
 import { EnvService } from '../env/env.service.js';
 
@@ -21,6 +22,7 @@ export class HealthController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Check the health of the application' })
   @HealthCheck()
   check() {
     return this.health.check([
