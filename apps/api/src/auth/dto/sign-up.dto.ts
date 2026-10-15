@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { IssuedSession, SessionRecord } from '@nestjs/authentication';
 
-export class ValidationErrorSignUpResponseDto {
+export class ValidationErrorResponseDto {
   @ApiProperty({ example: 400 })
   statusCode: number;
 
@@ -16,4 +17,10 @@ export class SignUpResponseDto {
   email: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export class SignInResponseDto implements IssuedSession {
+  session: SessionRecord;
+  token: string;
+  cookie: string;
 }
