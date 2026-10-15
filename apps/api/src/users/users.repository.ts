@@ -21,6 +21,7 @@ export class UsersRepository {
     const [user] = await this.db.insert(users).values({ email, password }).returning({
       id: users.id,
       email: users.email,
+      password: users.password,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     });
