@@ -49,7 +49,16 @@ export class AuthController {
   async signUp(
     @Body({ schema: signUpSchema }) { email, password }: SignUpDto,
   ): Promise<SignUpResponseDto> {
-    return this.credentialsService.register({ email, password });
+    const {
+      id,
+      email: userEmail,
+      createdAt,
+      updatedAt,
+    } = await this.credentialsService.register({ email, password });
+
+    await this.signInService.signIn(String(id), { method: 'password' });
+
+    return { id, email: userEmail, createdAt, updatedAt };
   }
 
   @Post('sign-in')
