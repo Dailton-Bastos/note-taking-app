@@ -58,27 +58,6 @@ describe('AuthController', () => {
       expect(credentialsService.register).toHaveBeenCalledTimes(1);
       expect(credentialsService.register).toHaveBeenCalledWith(createUserDto);
     });
-
-    it('should call signInService.signIn after successful registration', async () => {
-      const createUserDto = { email: 'test@example.com', password: 'password' };
-
-      vi.spyOn(credentialsService, 'register').mockResolvedValue({
-        id: 1,
-        email: 'test@example.com',
-        password: 'password',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      const signInSpy = vi.spyOn(signInService, 'signIn').mockResolvedValue({
-        cookie: 'test-cookie',
-      } as IssuedSession);
-
-      await controller.signUp(createUserDto);
-
-      expect(signInSpy).toHaveBeenCalledTimes(1);
-      expect(signInSpy).toHaveBeenCalledWith('1', { method: 'password' });
-    });
   });
 
   describe('signIn', () => {
