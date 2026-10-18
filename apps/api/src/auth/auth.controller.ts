@@ -41,7 +41,7 @@ export class AuthController {
     description: 'Invalid input data.',
     type: AuthInputValidationDto,
   })
-  @ApiUnauthorizedResponse({
+  @ApiConflictResponse({
     description: 'Email is already in use.',
     example: new ConflictException('Email is already in use').getResponse(),
   })
@@ -62,7 +62,7 @@ export class AuthController {
     description: 'Invalid input data.',
     type: AuthInputValidationDto,
   })
-  @ApiConflictResponse({
+  @ApiUnauthorizedResponse({
     description: 'Email or password is incorrect.',
     example: new UnauthorizedException('Email or password is incorrect').getResponse(),
   })
