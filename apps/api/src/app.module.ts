@@ -22,6 +22,10 @@ import { AuthModule } from './auth/auth.module.js';
     }),
     AuthenticationModule.forRoot({
       isGlobal: true,
+      session: {
+        absoluteTtl: '7d',
+        idleTtl: '1d',
+      },
     }),
     EnvModule,
     HealthModule,
