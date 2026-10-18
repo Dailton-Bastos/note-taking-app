@@ -17,8 +17,17 @@ export class UsersRepository {
     return user;
   }
 
-  async findById({ id }: { id: number }): Promise<User | null> {
-    const [user = null] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+  async findById({ id }: { id: number }): Promise<Omit<User, 'password'> | null> {
+    const [user = null] = await this.db
+      .select({
+        id: users.id,
+        email: users.email,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
 
     if (!user) return null;
 
