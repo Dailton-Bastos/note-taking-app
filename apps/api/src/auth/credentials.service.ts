@@ -22,17 +22,17 @@ export class CredentialsService {
     return this.usersRepository.create({ email, password: hashedPassword });
   }
 
-  async verify({ email, password }: SignInDto): Promise<User | null> {
-    const user = await this.usersRepository.findByEmail({ email });
+  async verify({ email, password }: SignInDto): Promise<{ id: number; password: string } | null> {
+    const credentials = await this.usersRepository.findCredentials({ email });
 
-    if (!user) return null;
+    if (!credentials) return null;
 
-    const isPasswordValid = await this.passwordHasher.verify(password, user.password);
+    const isPasswordValid = await this.passwordHasher.verify(password, credentials.password);
 
     if (!isPasswordValid) return null;
 
     // TODO: Rehash the password and update the user record
 
-    return user;
+    return credentials;
   }
 }

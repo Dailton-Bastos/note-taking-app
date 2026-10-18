@@ -10,14 +10,23 @@ export class UsersRepository {
   constructor(@InjectDrizzle() private readonly db: Database) {}
 
   async findByEmail({ email }: { email: string }): Promise<User | null> {
-    const [user = null] = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+    const [user = null] = await this.db
+      .select({
+        id: users.id,
+        email: users.email,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
 
     if (!user) return null;
 
     return user;
   }
 
-  async findById({ id }: { id: number }): Promise<Omit<User, 'password'> | null> {
+  async findById({ id }: { id: number }): Promise<User | null> {
     const [user = null] = await this.db
       .select({
         id: users.id,
@@ -34,11 +43,29 @@ export class UsersRepository {
     return user;
   }
 
+  async findCredentials({
+    email,
+  }: {
+    email: string;
+  }): Promise<{ id: number; password: string } | null> {
+    const [credentials = null] = await this.db
+      .select({
+        id: users.id,
+        password: users.password,
+      })
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    if (!credentials) return null;
+
+    return credentials;
+  }
+
   async create({ email, password }: SignUpDto): Promise<User> {
     const [user] = await this.db.insert(users).values({ email, password }).returning({
       id: users.id,
       email: users.email,
-      password: users.password,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     });

@@ -48,7 +48,6 @@ describe('AuthController', () => {
       vi.spyOn(credentialsService, 'register').mockResolvedValue({
         id: 1,
         email: 'test@example.com',
-        password: 'password',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -66,10 +65,7 @@ describe('AuthController', () => {
 
       vi.spyOn(credentialsService, 'verify').mockResolvedValue({
         id: 1,
-        email: 'test@example.com',
         password: 'password',
-        createdAt: new Date(),
-        updatedAt: new Date(),
       });
 
       const signInSpy = vi.spyOn(signInService, 'signIn').mockResolvedValue({

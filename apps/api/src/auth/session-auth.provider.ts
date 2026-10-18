@@ -21,6 +21,6 @@ export class SessionAuthProvider extends SessionCookieProvider<Omit<User, 'passw
 
   validate(session: SessionRecord) {
     // Returning null ends the session.
-    return this.usersRepository.findById({ id: Number(session.id) });
+    return this.usersRepository.findById({ id: Number(session.userId) });
   }
 }
