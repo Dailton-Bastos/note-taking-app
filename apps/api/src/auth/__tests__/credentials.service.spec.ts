@@ -18,6 +18,7 @@ describe('CredentialsService', () => {
           provide: UsersRepository,
           useValue: {
             findByEmail: vi.fn(),
+            findCredentials: vi.fn(),
             create: vi.fn(),
           },
         },
@@ -88,45 +89,47 @@ describe('CredentialsService', () => {
   describe('verify', () => {
     it('should verify a user with correct credentials', async () => {
       const verifyUserDto: SignInDto = { email: 'test@example.com', password: 'password' };
-      const user = { id: 1, ...verifyUserDto } as unknown as User;
+      const credentials = { id: 1, password: 'hashedPassword' };
 
-      vi.spyOn(usersRepository, 'findByEmail').mockResolvedValue(user);
+      vi.spyOn(usersRepository, 'findCredentials').mockResolvedValue(credentials);
       vi.spyOn(passwordHasher, 'verify').mockResolvedValue(true);
 
       const result = await service.verify(verifyUserDto);
 
-      expect(result).toEqual(user);
-      expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: verifyUserDto.email });
-      expect(passwordHasher.verify).toHaveBeenCalledWith(verifyUserDto.password, user.password);
+      expect(result).toEqual(credentials);
+      expect(usersRepository.findCredentials).toHaveBeenCalledWith({ email: verifyUserDto.email });
+      expect(passwordHasher.verify).toHaveBeenCalledWith(
+        verifyUserDto.password,
+        credentials.password,
+      );
     });
 
     it('should return null if the credentials are incorrect', async () => {
       const verifyUserDto: SignInDto = { email: 'test@example.com', password: 'wrongpassword' };
 
-      vi.spyOn(usersRepository, 'findByEmail').mockResolvedValue({
+      vi.spyOn(usersRepository, 'findCredentials').mockResolvedValue({
         id: 1,
-        email: verifyUserDto.email,
         password: 'hashedPassword',
-      } as unknown as User);
+      });
 
       vi.spyOn(passwordHasher, 'verify').mockResolvedValue(false);
 
       const result = await service.verify(verifyUserDto);
 
       expect(result).toBeNull();
-      expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: verifyUserDto.email });
+      expect(usersRepository.findCredentials).toHaveBeenCalledWith({ email: verifyUserDto.email });
       expect(passwordHasher.verify).toHaveBeenCalledWith(verifyUserDto.password, 'hashedPassword');
     });
 
     it('should return null if the user does not exist', async () => {
       const verifyUserDto: SignInDto = { email: 'nonexistent@example.com', password: 'password' };
 
-      vi.spyOn(usersRepository, 'findByEmail').mockResolvedValue(null);
+      vi.spyOn(usersRepository, 'findCredentials').mockResolvedValue(null);
 
       const result = await service.verify(verifyUserDto);
 
       expect(result).toBeNull();
-      expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: verifyUserDto.email });
+      expect(usersRepository.findCredentials).toHaveBeenCalledWith({ email: verifyUserDto.email });
       expect(passwordHasher.verify).not.toHaveBeenCalled();
     });
   });
