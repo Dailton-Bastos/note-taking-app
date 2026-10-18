@@ -149,4 +149,41 @@ describe('UsersRepository', () => {
       expect(result).toBeNull();
     });
   });
+
+  describe('findCredentials', () => {
+    it('should find credentials by email', async () => {
+      const credentials = { id: 1, password: 'hashedPassword' };
+
+      const selectSpy = vi.spyOn(mockDb, 'select');
+
+      selectSpy.mockReturnValueOnce({
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValueOnce([credentials]),
+      });
+
+      const email = 'test@example.com';
+
+      const result = await repository.findCredentials({ email });
+
+      expect(result).toEqual(credentials);
+      expect(selectSpy).toHaveBeenCalled();
+    });
+
+    it('should return null if no credentials are found', async () => {
+      const selectSpy = vi.spyOn(mockDb, 'select');
+
+      selectSpy.mockReturnValueOnce({
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValueOnce([]),
+      });
+
+      const email = 'nonexistent@example.com';
+
+      const result = await repository.findCredentials({ email });
+
+      expect(result).toBeNull();
+    });
+  });
 });

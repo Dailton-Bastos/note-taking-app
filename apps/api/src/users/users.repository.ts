@@ -43,6 +43,25 @@ export class UsersRepository {
     return user;
   }
 
+  async findCredentials({
+    email,
+  }: {
+    email: string;
+  }): Promise<{ id: number; password: string } | null> {
+    const [credentials = null] = await this.db
+      .select({
+        id: users.id,
+        password: users.password,
+      })
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    if (!credentials) return null;
+
+    return credentials;
+  }
+
   async create({ email, password }: SignUpDto): Promise<User> {
     const [user] = await this.db.insert(users).values({ email, password }).returning({
       id: users.id,
