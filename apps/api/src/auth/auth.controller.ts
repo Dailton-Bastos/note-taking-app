@@ -18,11 +18,9 @@ import {
 } from '@nestjs/swagger';
 import { type SignUpDto, SignInDto, signUpSchema, signInSchema } from '@repo/schemas';
 import { CredentialsService } from './credentials.service.js';
-import {
-  ValidationErrorResponseDto,
-  SignUpResponseDto,
-  SignInResponseDto,
-} from './dto/sign-up.dto.js';
+import { SignUpResponseDto } from './dto/sign-up.dto.js';
+import { SignInResponseDto } from './dto/sign-in.dto.js';
+import { AuthInputValidationDto } from './dto/auth-input-validation.dto.js';
 
 @Public()
 @Controller('auth')
@@ -41,7 +39,7 @@ export class AuthController {
   })
   @ApiBadRequestResponse({
     description: 'Invalid input data.',
-    type: ValidationErrorResponseDto,
+    type: AuthInputValidationDto,
   })
   @ApiUnauthorizedResponse({
     description: 'Email is already in use.',
@@ -50,14 +48,7 @@ export class AuthController {
   async signUp(
     @Body({ schema: signUpSchema }) { email, password }: SignUpDto,
   ): Promise<SignUpResponseDto> {
-    const {
-      id,
-      email: userEmail,
-      createdAt,
-      updatedAt,
-    } = await this.credentialsService.register({ email, password });
-
-    return { id, email: userEmail, createdAt, updatedAt };
+    return this.credentialsService.register({ email, password });
   }
 
   @Post('sign-in')
@@ -69,7 +60,7 @@ export class AuthController {
   })
   @ApiBadRequestResponse({
     description: 'Invalid input data.',
-    type: ValidationErrorResponseDto,
+    type: AuthInputValidationDto,
   })
   @ApiConflictResponse({
     description: 'Email or password is incorrect.',
