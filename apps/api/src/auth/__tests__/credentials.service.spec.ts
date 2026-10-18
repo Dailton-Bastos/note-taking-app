@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PasswordHasher } from '@nestjs/authentication';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import type { SignUpDto, User } from '@repo/schemas';
+import type { SignUpDto, SignInDto, User } from '@repo/schemas';
 import { CredentialsService } from '../credentials.service.js';
 import { UsersRepository } from '../../users/users.repository.js';
 
@@ -25,6 +25,7 @@ describe('CredentialsService', () => {
           provide: PasswordHasher,
           useValue: {
             hash: vi.fn(),
+            verify: vi.fn(),
           },
         },
       ],
@@ -81,6 +82,52 @@ describe('CredentialsService', () => {
 
       expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: createUserDto.email });
       expect(usersRepository.create).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('verify', () => {
+    it('should verify a user with correct credentials', async () => {
+      const verifyUserDto: SignInDto = { email: 'test@example.com', password: 'password' };
+      const user = { id: 1, ...verifyUserDto } as unknown as User;
+
+      vi.spyOn(usersRepository, 'findByEmail').mockResolvedValue(user);
+      vi.spyOn(passwordHasher, 'verify').mockResolvedValue(true);
+
+      const result = await service.verify(verifyUserDto);
+
+      expect(result).toEqual(user);
+      expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: verifyUserDto.email });
+      expect(passwordHasher.verify).toHaveBeenCalledWith(verifyUserDto.password, user.password);
+    });
+
+    it('should return null if the credentials are incorrect', async () => {
+      const verifyUserDto: SignInDto = { email: 'test@example.com', password: 'wrongpassword' };
+
+      vi.spyOn(usersRepository, 'findByEmail').mockResolvedValue({
+        id: 1,
+        email: verifyUserDto.email,
+        password: 'hashedPassword',
+      } as unknown as User);
+
+      vi.spyOn(passwordHasher, 'verify').mockResolvedValue(false);
+
+      const result = await service.verify(verifyUserDto);
+
+      expect(result).toBeNull();
+      expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: verifyUserDto.email });
+      expect(passwordHasher.verify).toHaveBeenCalledWith(verifyUserDto.password, 'hashedPassword');
+    });
+
+    it('should return null if the user does not exist', async () => {
+      const verifyUserDto: SignInDto = { email: 'nonexistent@example.com', password: 'password' };
+
+      vi.spyOn(usersRepository, 'findByEmail').mockResolvedValue(null);
+
+      const result = await service.verify(verifyUserDto);
+
+      expect(result).toBeNull();
+      expect(usersRepository.findByEmail).toHaveBeenCalledWith({ email: verifyUserDto.email });
+      expect(passwordHasher.verify).not.toHaveBeenCalled();
     });
   });
 });

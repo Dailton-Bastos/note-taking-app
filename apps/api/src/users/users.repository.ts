@@ -17,10 +17,28 @@ export class UsersRepository {
     return user;
   }
 
+  async findById({ id }: { id: number }): Promise<Omit<User, 'password'> | null> {
+    const [user = null] = await this.db
+      .select({
+        id: users.id,
+        email: users.email,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+
+    if (!user) return null;
+
+    return user;
+  }
+
   async create({ email, password }: SignUpDto): Promise<User> {
     const [user] = await this.db.insert(users).values({ email, password }).returning({
       id: users.id,
       email: users.email,
+      password: users.password,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     });
