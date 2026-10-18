@@ -17,6 +17,14 @@ export class UsersRepository {
     return user;
   }
 
+  async findById({ id }: { id: number }): Promise<User | null> {
+    const [user = null] = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+
+    if (!user) return null;
+
+    return user;
+  }
+
   async create({ email, password }: SignUpDto): Promise<User> {
     const [user] = await this.db.insert(users).values({ email, password }).returning({
       id: users.id,

@@ -112,4 +112,41 @@ describe('UsersRepository', () => {
       expect(insertSpy).toHaveBeenCalled();
     });
   });
+
+  describe('findById', () => {
+    it('should find a user by id', async () => {
+      const user = { id: 1, email: 'test@example.com' } as User;
+
+      const selectSpy = vi.spyOn(mockDb, 'select');
+
+      selectSpy.mockReturnValueOnce({
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValueOnce([user]),
+      });
+
+      const id = 1;
+
+      const result = await repository.findById({ id });
+
+      expect(result).toEqual(user);
+      expect(selectSpy).toHaveBeenCalled();
+    });
+
+    it('should return null if no user is found', async () => {
+      const selectSpy = vi.spyOn(mockDb, 'select');
+
+      selectSpy.mockReturnValueOnce({
+        from: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockResolvedValueOnce([]),
+      });
+
+      const id = 999;
+
+      const result = await repository.findById({ id });
+
+      expect(result).toBeNull();
+    });
+  });
 });
