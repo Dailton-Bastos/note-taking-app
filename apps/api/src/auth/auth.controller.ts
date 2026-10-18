@@ -14,6 +14,7 @@ import {
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { type SignUpDto, SignInDto, signUpSchema, signInSchema } from '@repo/schemas';
 import { CredentialsService } from './credentials.service.js';
@@ -42,7 +43,7 @@ export class AuthController {
     description: 'Invalid input data.',
     type: ValidationErrorResponseDto,
   })
-  @ApiConflictResponse({
+  @ApiUnauthorizedResponse({
     description: 'Email is already in use.',
     example: new ConflictException('Email is already in use').getResponse(),
   })
@@ -55,8 +56,6 @@ export class AuthController {
       createdAt,
       updatedAt,
     } = await this.credentialsService.register({ email, password });
-
-    await this.signInService.signIn(String(id), { method: 'password' });
 
     return { id, email: userEmail, createdAt, updatedAt };
   }
