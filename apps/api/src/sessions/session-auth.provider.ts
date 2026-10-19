@@ -8,7 +8,7 @@ import type { User } from '@repo/schemas';
 import { UsersRepository } from '../users/users.repository.js';
 
 @Injectable()
-export class SessionAuthProvider extends SessionCookieProvider<Omit<User, 'password'>> {
+export class SessionAuthProvider extends SessionCookieProvider<User> {
   constructor(
     private readonly usersRepository: UsersRepository,
     registry: AuthenticationRegistry,
