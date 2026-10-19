@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDrizzle } from '@nestjs/drizzle';
 import { type SessionStore, SessionRecord, AuthenticationStorage } from '@nestjs/authentication';
-import type { Database } from '../database/database.js';
+import { SessionsRepository } from './sessions.repository.js';
 
 @Injectable()
 export class SessionAuthStore implements SessionStore {
   constructor(
-    @InjectDrizzle() private readonly db: Database,
+    private readonly sessionsRepository: SessionsRepository,
     storage: AuthenticationStorage,
   ) {
     storage.registerSource({ sessions: this });
@@ -16,7 +15,9 @@ export class SessionAuthStore implements SessionStore {
     return;
   }
 
-  async createSession() {}
+  async createSession(session: SessionRecord): Promise<void> {
+    await this.sessionsRepository.create(session);
+  }
 
   async listUserSessions(): Promise<SessionRecord[]> {
     return [];
