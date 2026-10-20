@@ -12,6 +12,9 @@ describe('SessionsRepository', () => {
 
   let mockDb: {
     transaction: ReturnType<typeof vi.fn>;
+    select: ReturnType<typeof vi.fn>;
+    from: ReturnType<typeof vi.fn>;
+    limit: ReturnType<typeof vi.fn>;
     insert: ReturnType<typeof vi.fn>;
     values: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
@@ -25,10 +28,13 @@ describe('SessionsRepository', () => {
         .mockImplementation(async (callback: (tx: typeof mockDb) => Promise<unknown>) => {
           return callback(mockDb);
         }),
+      select: vi.fn().mockReturnThis(),
+      from: vi.fn().mockReturnThis(),
       insert: vi.fn().mockReturnThis(),
       values: vi.fn().mockReturnThis(),
       delete: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockReturnThis(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -72,6 +78,34 @@ describe('SessionsRepository', () => {
         userId: Number(session.userId),
       });
       expect(mockDb.delete).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findById', () => {
+    it('should find a session by id', async () => {
+      const session: SessionRecord = {
+        id: 'ZM3uKwwpsbR00Tov5hGaLnvrgnqsJtzapb8jrjY-m08',
+        userId: '1',
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
+        lastActiveAt: new Date(),
+        createdAt: new Date(),
+      };
+
+      mockDb.limit = vi.fn().mockResolvedValue([session]);
+
+      const result = await repository.findById(session.id);
+
+      expect(result).toBeDefined();
+      expect(result?.id).toBe(session.id);
+      expect(result?.userId).toBe(String(session.userId));
+    });
+
+    it('should return undefined if session is not found', async () => {
+      mockDb.limit = vi.fn().mockResolvedValue([]);
+
+      const result = await repository.findById('non-existent-id');
+
+      expect(result).toBeUndefined();
     });
   });
 });

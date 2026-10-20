@@ -11,8 +11,8 @@ export class SessionAuthStore implements SessionStore {
     storage.registerSource({ sessions: this });
   }
 
-  async getSession(): Promise<SessionRecord | undefined> {
-    return;
+  async getSession(id: string): Promise<SessionRecord | undefined> {
+    return this.sessionsRepository.findById(id);
   }
 
   async createSession(session: SessionRecord): Promise<void> {
