@@ -20,14 +20,19 @@ export class SessionAuthStore implements SessionStore {
   }
 
   async listUserSessions(): Promise<SessionRecord[]> {
+    // TODO: Implement listing user sessions based on the current authenticated user.
     return [];
   }
 
-  async touchSession() {}
+  async touchSession() {
+    // TODO: Implement updating the session's last accessed timestamp.
+  }
 
   async deleteSession(id: string): Promise<boolean> {
     return this.sessionsRepository.delete(id);
   }
 
-  async deleteUserSessions() {}
+  async deleteUserSessions() {
+    // TODO: Implement deleting all sessions for the current authenticated user.
+  }
 }
