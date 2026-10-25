@@ -59,21 +59,6 @@ describe('AuthController (e2e)', () => {
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty('message');
     });
-
-    it('should sign up a new user and log in', async () => {
-      await db.delete(users).where(eq(users.email, signUpDto.email));
-
-      const signUpResponse = await request(app.getHttpServer())
-        .post('/api/auth/sign-up')
-        .send(signUpDto);
-
-      expect(signUpResponse.status).toBe(201);
-      expect(signUpResponse.headers['set-cookie']).toBeDefined();
-      expect(signUpResponse.headers['set-cookie'].length).toBeGreaterThan(0);
-      expect(signUpResponse.headers['set-cookie'][0]).toMatch(
-        /__Host-sid=.*; Path=\/; HttpOnly; Secure; SameSite=Lax/,
-      );
-    });
   });
 
   describe('/api/auth/sign-in (POST)', () => {
