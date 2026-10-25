@@ -25,8 +25,8 @@ export class SessionAuthStore implements SessionStore {
 
   async touchSession() {}
 
-  async deleteSession(): Promise<boolean> {
-    return false;
+  async deleteSession(id: string): Promise<boolean> {
+    return this.sessionsRepository.delete(id);
   }
 
   async deleteUserSessions() {}

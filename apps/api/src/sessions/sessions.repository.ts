@@ -32,4 +32,13 @@ export class SessionsRepository {
       await tx.delete(sessions).where(lte(sessions.expiresAt, session.createdAt));
     });
   }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.db
+      .delete(sessions)
+      .where(eq(sessions.id, id))
+      .returning({ id: sessions.id });
+
+    return result.length > 0;
+  }
 }

@@ -19,6 +19,7 @@ describe('SessionsRepository', () => {
     values: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
     where: ReturnType<typeof vi.fn>;
+    returning: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -35,6 +36,7 @@ describe('SessionsRepository', () => {
       delete: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
+      returning: vi.fn().mockReturnThis(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -106,6 +108,18 @@ describe('SessionsRepository', () => {
       const result = await repository.findById('non-existent-id');
 
       expect(result).toBeUndefined();
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete a session by id', async () => {
+      const sessionId = 'ZM3uKwwpsbR00Tov5hGaLnvrgnqsJtzapb8jrjY-m08';
+
+      await repository.delete(sessionId);
+
+      expect(mockDb.delete).toHaveBeenCalledWith(sessions);
+      expect(mockDb.where).toHaveBeenCalledTimes(1);
+      expect(mockDb.returning).toHaveBeenCalledTimes(1);
     });
   });
 });
