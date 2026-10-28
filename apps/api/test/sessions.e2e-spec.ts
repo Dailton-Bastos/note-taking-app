@@ -35,7 +35,7 @@ describe('SessionsController (e2e)', () => {
   describe('/api/auth/sign-out (POST)', () => {
     it('should sign out successfully', async () => {
       const user = {
-        email: 'test@example.com',
+        email: 'sessions-sign-out@example.com',
         password: 'password123',
       };
 
