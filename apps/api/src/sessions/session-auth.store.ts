@@ -24,8 +24,8 @@ export class SessionAuthStore implements SessionStore {
     return [];
   }
 
-  async touchSession() {
-    // TODO: Implement updating the session's last accessed timestamp.
+  async touchSession(id: string, lastActiveAt: Date): Promise<void> {
+    await this.sessionsRepository.touch(id, lastActiveAt);
   }
 
   async deleteSession(id: string): Promise<boolean> {

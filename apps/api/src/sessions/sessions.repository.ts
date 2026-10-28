@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
 import type { SessionRecord } from '@nestjs/authentication';
-import { lte, eq } from 'drizzle-orm';
+import { lte, eq, and, lt } from 'drizzle-orm';
 import type { Database } from '../database/database.js';
 import { sessions } from '../database/schema/index.js';
 
@@ -40,5 +40,12 @@ export class SessionsRepository {
       .returning({ id: sessions.id });
 
     return result.length > 0;
+  }
+
+  async touch(id: string, lastActiveAt: Date): Promise<void> {
+    await this.db
+      .update(sessions)
+      .set({ lastActiveAt })
+      .where(and(eq(sessions.id, id), lt(sessions.lastActiveAt, lastActiveAt)));
   }
 }

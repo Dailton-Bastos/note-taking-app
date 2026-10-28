@@ -20,6 +20,8 @@ describe('SessionsRepository', () => {
     delete: ReturnType<typeof vi.fn>;
     where: ReturnType<typeof vi.fn>;
     returning: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+    set: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -37,6 +39,8 @@ describe('SessionsRepository', () => {
       where: vi.fn().mockReturnThis(),
       limit: vi.fn().mockReturnThis(),
       returning: vi.fn().mockReturnThis(),
+      update: vi.fn().mockReturnThis(),
+      set: vi.fn().mockReturnThis(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -120,6 +124,19 @@ describe('SessionsRepository', () => {
       expect(mockDb.delete).toHaveBeenCalledWith(sessions);
       expect(mockDb.where).toHaveBeenCalledTimes(1);
       expect(mockDb.returning).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('touch', () => {
+    it('should update the lastActiveAt of a session', async () => {
+      const sessionId = 'ZM3uKwwpsbR00Tov5hGaLnvrgnqsJtzapb8jrjY-m08';
+      const lastActiveAt = new Date();
+
+      await repository.touch(sessionId, lastActiveAt);
+
+      expect(mockDb.update).toHaveBeenCalledWith(sessions);
+      expect(mockDb.set).toHaveBeenCalledWith({ lastActiveAt });
+      expect(mockDb.where).toHaveBeenCalledTimes(1);
     });
   });
 });
