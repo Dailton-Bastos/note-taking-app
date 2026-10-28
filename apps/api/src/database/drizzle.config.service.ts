@@ -3,6 +3,7 @@ import { type DrizzleModuleFactoryOptions, DrizzleOptionsFactory } from '@nestjs
 import { Environment } from '@repo/schemas';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { EnvService } from '../env/env.service.js';
+import { relations } from './relations.js';
 
 @Injectable()
 export class DrizzleConfigService implements DrizzleOptionsFactory {
@@ -11,6 +12,7 @@ export class DrizzleConfigService implements DrizzleOptionsFactory {
   createDrizzleOptions(): DrizzleModuleFactoryOptions {
     return {
       drizzle,
+      relations,
       connection: this.envService.get('POSTGRES_URL'),
       logger: this.envService.get('NODE_ENV') === Environment.Development,
     };
