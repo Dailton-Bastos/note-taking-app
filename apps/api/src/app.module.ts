@@ -25,6 +25,7 @@ import { AuthModule } from './auth/auth.module.js';
       session: {
         absoluteTtl: '7d',
         idleTtl: '1d',
+        cookieName: '__Host-sid',
       },
     }),
     EnvModule,

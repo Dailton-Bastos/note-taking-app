@@ -18,6 +18,11 @@ async function bootstrap() {
     .setTitle('The Note-Taking App API Documentation')
     .setDescription('API documentation for The Note-Taking App')
     .setVersion('1.0')
+    .addCookieAuth('__Host-sid', {
+      type: 'apiKey',
+      in: 'cookie',
+      description: 'Token stored in the __Host-sid cookie',
+    })
     .build();
 
   const swaggerDocumentOptions: SwaggerDocumentOptions = {
