@@ -23,4 +23,6 @@ export const validationApiSchema = z.object({
     .positive()
     .default(150 * 1024 * 1024),
   HEALTH_DISK_THRESHOLD_PERCENT: z.coerce.number<number>().positive().default(0.5),
+  APP_URL: z.url({ message: 'Please provide a valid website address.' }),
+  MAIL_FROM: z.email({ message: 'Please provide a valid email address.' }),
 });
