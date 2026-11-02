@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DrizzleModule } from '@nestjs/drizzle';
 import { AuthenticationModule } from '@nestjs/authentication';
-import { FileMailTransport, FileTemplateEngine, MailModule } from '@nestjs/mail';
+import { FileTemplateEngine, MailModule, SmtpTransport } from '@nestjs/mail';
 import { Environment } from '@repo/schemas';
 import { join } from 'node:path';
 import { validate } from './env/env.validation.js';
@@ -27,8 +27,11 @@ import { AuthModule } from './auth/auth.module.js';
     MailModule.forRootAsync({
       imports: [EnvModule],
       useFactory: (envService: EnvService) => ({
-        transport: new FileMailTransport({
-          directory: join(import.meta.dirname, 'var/mail'),
+        transport: new SmtpTransport({
+          url: envService.get('SMTP_URL'),
+          startTls:
+            envService.get('NODE_ENV') === Environment.Production ? 'required' : 'opportunistic',
+          pool: true,
         }),
         templates: new FileTemplateEngine({
           dir: join(import.meta.dirname, 'mail/templates'),
