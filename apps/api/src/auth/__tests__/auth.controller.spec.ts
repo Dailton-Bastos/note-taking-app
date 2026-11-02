@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
-import { type IssuedSession, SignInService } from '@nestjs/authentication';
+import {
+  type IssuedSession,
+  SignInService,
+  EmailVerificationService,
+} from '@nestjs/authentication';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AuthController } from '../auth.controller.js';
 import { CredentialsService } from '../credentials.service.js';
@@ -9,6 +13,7 @@ describe('AuthController', () => {
   let controller: AuthController;
   let credentialsService: CredentialsService;
   let signInService: SignInService;
+  let emailVerificationService: EmailVerificationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,18 +32,28 @@ describe('AuthController', () => {
             signIn: vi.fn(),
           },
         },
+        {
+          provide: EmailVerificationService,
+          useValue: {
+            send: vi.fn(),
+            markVerified: vi.fn(),
+            isVerified: vi.fn(),
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
     credentialsService = module.get<CredentialsService>(CredentialsService);
     signInService = module.get<SignInService>(SignInService);
+    emailVerificationService = module.get<EmailVerificationService>(EmailVerificationService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(credentialsService).toBeDefined();
     expect(signInService).toBeDefined();
+    expect(emailVerificationService).toBeDefined();
   });
 
   describe('signUp', () => {
@@ -56,6 +71,29 @@ describe('AuthController', () => {
 
       expect(credentialsService.register).toHaveBeenCalledTimes(1);
       expect(credentialsService.register).toHaveBeenCalledWith(createUserDto);
+    });
+
+    it('should call emailVerificationService.send after successful registration', async () => {
+      const createUserDto = { email: 'test@example.com', password: 'password' };
+
+      vi.spyOn(credentialsService, 'register').mockResolvedValue({
+        id: 1,
+        email: 'test@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const sendSpy = vi.spyOn(emailVerificationService, 'send').mockResolvedValue({
+        expiresAt: new Date(),
+      });
+
+      await controller.signUp(createUserDto);
+
+      expect(sendSpy).toHaveBeenCalledTimes(1);
+      expect(sendSpy).toHaveBeenCalledWith({
+        id: expect.any(String),
+        email: 'test@example.com',
+      });
     });
   });
 

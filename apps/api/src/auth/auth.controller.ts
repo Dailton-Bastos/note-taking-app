@@ -7,7 +7,7 @@ import {
   Post,
   Body,
 } from '@nestjs/common';
-import { Public, SignInService } from '@nestjs/authentication';
+import { Public, SignInService, EmailVerificationService } from '@nestjs/authentication';
 import {
   ApiOperation,
   ApiOkResponse,
@@ -28,6 +28,7 @@ export class AuthController {
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly signInService: SignInService,
+    private readonly emailVerificationService: EmailVerificationService,
   ) {}
 
   @Post('sign-up')
@@ -48,7 +49,11 @@ export class AuthController {
   async signUp(
     @Body({ schema: signUpSchema }) { email, password }: SignUpDto,
   ): Promise<SignUpResponseDto> {
-    return this.credentialsService.register({ email, password });
+    const user = await this.credentialsService.register({ email, password });
+
+    await this.emailVerificationService.send({ id: String(user.id), email });
+
+    return user;
   }
 
   @Post('sign-in')
