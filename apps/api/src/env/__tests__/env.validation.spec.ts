@@ -7,6 +7,8 @@ describe('validate', () => {
       NODE_ENV: 'development',
       PORT: 3000,
       POSTGRES_URL: 'postgres://user:password@localhost:5432/db',
+      APP_URL: 'http://localhost:5173',
+      MAIL_FROM: 'no-reply@example.com',
     };
     const result = validate(env);
     expect(result.NODE_ENV).toBe('development');
