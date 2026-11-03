@@ -9,3 +9,7 @@ export const signInSchema = z.object({
   email: z.email(),
   password: z.string().min(1, 'Please enter your password'),
 });
+
+export const emailVerificationSchema = z.object({
+  token: z.string().min(1, 'Please provide a verification token'),
+});
