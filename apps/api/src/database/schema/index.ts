@@ -5,6 +5,7 @@ import { timestamps } from '../helpers/columns.helpers.js';
 export const users = table('users', {
   id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
   email: t.varchar().notNull().unique(),
+  emailVerified: t.boolean('email_verified').notNull().default(false),
   password: t.varchar().notNull(),
   ...timestamps,
 });
