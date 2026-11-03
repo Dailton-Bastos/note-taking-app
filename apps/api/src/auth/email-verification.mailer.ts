@@ -5,6 +5,7 @@ import {
   EmailVerificationHandler,
 } from '@nestjs/authentication';
 import { type Mailable, Mailer } from '@nestjs/mail';
+import { UsersRepository } from '../users/users.repository.js';
 
 @Injectable()
 export class VerifyEmailMail implements Mailable<EmailVerificationLink> {
@@ -21,6 +22,7 @@ export class VerifyEmailMail implements Mailable<EmailVerificationLink> {
 export class EmailVerificationMailer extends EmailVerificationHandler {
   constructor(
     private readonly mailer: Mailer,
+    private readonly usersRepository: UsersRepository,
     registry: AuthenticationRegistry,
   ) {
     super();
@@ -31,9 +33,10 @@ export class EmailVerificationMailer extends EmailVerificationHandler {
     await this.mailer.send(VerifyEmailMail, { to: link.email, data: link });
   }
 
-  markVerified(): boolean {
-    // TODO: Implement logic to mark the email as verified in the database or authentication system.
-    return true;
+  async markVerified(userId: string, email: string): Promise<boolean> {
+    const id = Number(userId);
+
+    return this.usersRepository.markEmailAsVerified({ id, email });
   }
 
   isVerified(): boolean {
