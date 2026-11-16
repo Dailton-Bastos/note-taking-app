@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { CurrentUser } from '@nestjs/authentication';
+import { CurrentUser, Authenticate } from '@nestjs/authentication';
 import {
   ApiTags,
   ApiOperation,
@@ -11,6 +11,7 @@ import type { User } from '@repo/schemas';
 import { MeResponseDto } from './dto/me-response.dto.js';
 
 @ApiTags('Me')
+@Authenticate({ verifiedEmail: true })
 @Controller('me')
 export class MeController {
   @Get()

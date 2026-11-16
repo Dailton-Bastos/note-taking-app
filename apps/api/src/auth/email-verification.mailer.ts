@@ -5,6 +5,7 @@ import {
   EmailVerificationHandler,
 } from '@nestjs/authentication';
 import { type Mailable, Mailer } from '@nestjs/mail';
+import { type User } from '@repo/schemas';
 import { UsersRepository } from '../users/users.repository.js';
 
 @Injectable()
@@ -39,8 +40,7 @@ export class EmailVerificationMailer extends EmailVerificationHandler {
     return this.usersRepository.markEmailAsVerified({ id, email });
   }
 
-  isVerified(): boolean {
-    // TODO: Implement logic to check if the email is verified in the database or authentication system.
-    return false;
+  isVerified(user: User): boolean {
+    return user.emailVerified;
   }
 }
