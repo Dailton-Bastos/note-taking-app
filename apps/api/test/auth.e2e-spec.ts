@@ -1,21 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getDrizzleToken } from '@nestjs/drizzle';
+import { InMemoryMailTransport, MailTransport } from '@nestjs/mail';
 import type { INestApplication } from '@nestjs/common';
 import { type SignUpDto, SignInDto } from '@repo/schemas';
 import type { App } from 'supertest/types';
 import request from 'supertest';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/pglite/migrator';
 import { eq } from 'drizzle-orm';
+import { fileURLToPath } from 'node:url';
 import { AppModule } from './../src/app.module.js';
 import { Database } from '../src/database/database.js';
 import { users } from '../src/database/schema/index.js';
+import { VerifyEmailMail } from '../src/auth/email-verification.mailer.js';
 
 import 'dotenv/config';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication<App>;
   let db: Database;
+  const mailbox = new InMemoryMailTransport();
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,6 +28,8 @@ describe('AuthController (e2e)', () => {
     })
       .overrideProvider(getDrizzleToken())
       .useValue(drizzle({ connection: process.env.POSTGRES_URL_TEST as string }))
+      .overrideProvider(MailTransport)
+      .useValue(mailbox)
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -30,6 +37,9 @@ describe('AuthController (e2e)', () => {
 
     app.setGlobalPrefix('api');
 
+    await migrate(db, {
+      migrationsFolder: fileURLToPath(new URL('../drizzle', import.meta.url)),
+    });
     await app.init();
   });
 
@@ -39,7 +49,7 @@ describe('AuthController (e2e)', () => {
       password: 'password123',
     };
 
-    it('should sign up a new user', async () => {
+    it('should sign up a new user and send a confirmation email', async () => {
       await db.delete(users).where(eq(users.email, signUpDto.email));
 
       const response = await request(app.getHttpServer()).post('/api/auth/sign-up').send(signUpDto);
@@ -47,6 +57,11 @@ describe('AuthController (e2e)', () => {
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty('id');
       expect(response.body).toHaveProperty('email', 'test@example.com');
+
+      const mail = mailbox.assertSent({ to: signUpDto.email, mail: VerifyEmailMail });
+      expect(mail).toBeDefined();
+      expect(mail.sentAt).toBeDefined();
+      expect(mail.subject).toBeDefined();
     });
 
     it('should not sign up a user with an existing email', async () => {
