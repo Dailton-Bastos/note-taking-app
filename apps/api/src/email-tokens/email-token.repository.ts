@@ -20,7 +20,7 @@ export class EmailTokenRepository {
         userId: Number(record.userId),
       });
 
-      await this.trim(record.createdAt);
+      await this.trim(record.createdAt, tx);
     });
   }
 
@@ -47,9 +47,9 @@ export class EmailTokenRepository {
       .where(and(eq(emailTokens.userId, Number(userId)), eq(emailTokens.purpose, purpose)));
   }
 
-  private async trim(now: Date): Promise<void> {
+  private async trim(now: Date, db: Database): Promise<void> {
     await trim({
-      db: this.db,
+      db,
       table: emailTokens,
       now,
       maxPending: this.maxPending,
