@@ -1,4 +1,4 @@
-import { lte, lt, desc } from 'drizzle-orm';
+import { lte, gt, desc } from 'drizzle-orm';
 import { emailTokens } from '../schema/index.js';
 import type { Database } from '../database.js';
 
@@ -19,7 +19,7 @@ export const trim = async ({
   const [cutoff] = await db
     .select({ expiresAt: table.expiresAt })
     .from(table)
-    .where(lt(table.expiresAt, now))
+    .where(gt(table.expiresAt, now))
     .orderBy(desc(table.expiresAt))
     .limit(1)
     .offset(maxPending);
