@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { ZodError } from 'zod';
-import { signUpSchema, signInSchema } from '../index';
+import { signUpSchema, signInSchema, emailVerificationSchema } from '../index';
 
 describe('signUpSchema', () => {
   it('should pass with valid data', () => {
@@ -51,5 +51,21 @@ describe('signInSchema', () => {
       password: '',
     };
     expect(() => signInSchema.parse(invalidData)).toThrow(ZodError);
+  });
+});
+
+describe('emailVerificationSchema', () => {
+  it('should pass with valid data', () => {
+    const validData = {
+      token: 'valid-token',
+    };
+    expect(() => emailVerificationSchema.parse(validData)).not.toThrow();
+  });
+
+  it('should fail with empty token', () => {
+    const invalidData = {
+      token: '',
+    };
+    expect(() => emailVerificationSchema.parse(invalidData)).toThrow(ZodError);
   });
 });

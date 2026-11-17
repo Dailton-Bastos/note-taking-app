@@ -7,6 +7,7 @@ describe('userSchema', () => {
     const user = {
       id: 1,
       email: 'test@example.com',
+      emailVerified: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -17,6 +18,7 @@ describe('userSchema', () => {
     const user = {
       id: 'not-a-number',
       email: 'invalid-email',
+      emailVerified: 'not-a-boolean',
       createdAt: 'not-a-date',
       updatedAt: 'not-a-date',
     };

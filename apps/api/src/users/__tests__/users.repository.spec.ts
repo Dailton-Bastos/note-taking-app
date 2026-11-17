@@ -12,12 +12,16 @@ describe('UsersRepository', () => {
   let mockDb: {
     select: ReturnType<typeof vi.fn>;
     insert: ReturnType<typeof vi.fn>;
+    update: ReturnType<typeof vi.fn>;
+    set: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     mockDb = {
       select: vi.fn().mockReturnThis(),
       insert: vi.fn().mockReturnThis(),
+      update: vi.fn().mockReturnThis(),
+      set: vi.fn().mockReturnThis(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -184,6 +188,41 @@ describe('UsersRepository', () => {
       const result = await repository.findCredentials({ email });
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe('markEmailAsVerified', () => {
+    it('should mark email as verified', async () => {
+      const updateSpy = vi.spyOn(mockDb, 'update');
+
+      updateSpy.mockReturnValueOnce({
+        set: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        returning: vi.fn().mockResolvedValueOnce([{ id: 1 }]),
+      });
+
+      const result = await repository.markEmailAsVerified({ id: 1, email: 'test@example.com' });
+
+      expect(result).toBe(true);
+      expect(updateSpy).toHaveBeenCalled();
+    });
+
+    it('should return false if no rows are updated', async () => {
+      const updateSpy = vi.spyOn(mockDb, 'update');
+
+      updateSpy.mockReturnValueOnce({
+        set: vi.fn().mockReturnThis(),
+        where: vi.fn().mockReturnThis(),
+        returning: vi.fn().mockResolvedValueOnce([]),
+      });
+
+      const result = await repository.markEmailAsVerified({
+        id: 999,
+        email: 'nonexistent@example.com',
+      });
+
+      expect(result).toBe(false);
+      expect(updateSpy).toHaveBeenCalled();
     });
   });
 });

@@ -183,6 +183,21 @@ services:
       postgres:
         condition: service_healthy
 
+  mailpit:
+    image: axllent/mailpit:v1.31
+    container_name: mailpit
+    restart: unless-stopped
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - '127.0.0.1:8025:8025' # Web UI & API
+      - '127.0.0.1:1025:1025' # SMTP server
+    environment:
+      - MP_MAX_MESSAGES=5000
+      - MP_DATABASE=/data/mailpit.db
+      - MP_SMTP_AUTH_ACCEPT_ANY=1
+      - MP_SMTP_AUTH_ALLOW_INSECURE=1
+
 configs:
   pgadmin-servers:
     content: |
@@ -220,3 +235,4 @@ volumes:
   vitest_config_node_modules:
   postgres_data:
   pgadmin_data:
+  mailpit_data:

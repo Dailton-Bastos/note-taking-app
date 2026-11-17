@@ -5,6 +5,9 @@ describe('validationApiSchema', () => {
   it('should have default values', () => {
     const parsed = validationApiSchema.parse({
       POSTGRES_URL: 'postgres://user:password@localhost:5432/db',
+      APP_URL: 'http://localhost:5173',
+      MAIL_FROM: 'no-reply@example.com',
+      SMTP_URL: 'smtp://user:password@smtp.example.com:587',
     });
     expect(parsed.NODE_ENV).toBe('development');
     expect(parsed.PORT).toBe(3000);
@@ -15,6 +18,9 @@ describe('validationApiSchema', () => {
       NODE_ENV: 'production',
       PORT: 4000,
       POSTGRES_URL: 'postgres://user:password@localhost:5432/db',
+      APP_URL: 'http://localhost:5173',
+      MAIL_FROM: 'no-reply@example.com',
+      SMTP_URL: 'smtp://user:password@smtp.example.com:587',
     });
     expect(parsed.NODE_ENV).toBe('production');
     expect(parsed.PORT).toBe(4000);
@@ -27,6 +33,7 @@ describe('validationApiSchema', () => {
         NODE_ENV: 'invalid',
         PORT: 'not-a-number',
         POSTGRES_URL: 'invalid-url',
+        SMTP_URL: 'invalid-smtp-url',
       }),
     ).toThrow();
   });

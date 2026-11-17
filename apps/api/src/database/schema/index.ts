@@ -5,6 +5,7 @@ import { timestamps } from '../helpers/columns.helpers.js';
 export const users = table('users', {
   id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
   email: t.varchar().notNull().unique(),
+  emailVerified: t.boolean('email_verified').notNull().default(false),
   password: t.varchar().notNull(),
   ...timestamps,
 });
@@ -26,5 +27,25 @@ export const sessions = table(
   (t) => [
     index('sessions_user_id_idx').on(t.userId),
     index('sessions_expires_at_idx').on(t.expiresAt),
+  ],
+);
+
+export const emailTokens = table(
+  'email_tokens',
+  {
+    id: t.text('id').primaryKey(),
+    userId: t
+      .integer('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    email: t.text('email').notNull(),
+    purpose: t.text('purpose', { enum: ['password-reset', 'email-verification'] }).notNull(),
+    fingerprint: t.text('fingerprint'),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    index('email_tokens_user_id_purpose_idx').on(t.userId, t.purpose),
+    index('email_tokens_expires_at_idx').on(t.expiresAt),
   ],
 );

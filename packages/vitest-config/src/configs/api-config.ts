@@ -18,6 +18,9 @@ export const apiE2EConfig = mergeConfig(
       root: './test',
       environment: 'node',
       include: ['**/*.e2e-spec.ts'],
+      env: {
+        APP_URL: 'http://localhost:5173',
+      },
     },
   }),
 );

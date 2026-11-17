@@ -1,6 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectDrizzle } from '@nestjs/drizzle';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import type { User, SignUpDto } from '@repo/schemas';
 import type { Database } from '../database/database.js';
 import { users } from '../database/schema/index.js';
@@ -14,6 +14,7 @@ export class UsersRepository {
       .select({
         id: users.id,
         email: users.email,
+        emailVerified: users.emailVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       })
@@ -31,6 +32,7 @@ export class UsersRepository {
       .select({
         id: users.id,
         email: users.email,
+        emailVerified: users.emailVerified,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       })
@@ -66,6 +68,7 @@ export class UsersRepository {
     const [user] = await this.db.insert(users).values({ email, password }).returning({
       id: users.id,
       email: users.email,
+      emailVerified: users.emailVerified,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
     });
@@ -73,5 +76,15 @@ export class UsersRepository {
     if (!user) throw new ConflictException('Email already exists');
 
     return user;
+  }
+
+  async markEmailAsVerified({ id, email }: { id: number; email: string }): Promise<boolean> {
+    const result = await this.db
+      .update(users)
+      .set({ emailVerified: true })
+      .where(and(eq(users.id, id), eq(users.email, email)))
+      .returning({ id: users.id });
+
+    return result.length > 0;
   }
 }

@@ -4,6 +4,7 @@ import type { SessionRecord } from '@nestjs/authentication';
 import { lte, eq, and, lt } from 'drizzle-orm';
 import type { Database } from '../database/database.js';
 import { sessions } from '../database/schema/index.js';
+import { withoutNulls } from '../database/helpers/without-nulls.helper.js';
 
 @Injectable()
 export class SessionsRepository {
@@ -14,12 +15,10 @@ export class SessionsRepository {
 
     if (!session) return;
 
-    return {
+    return withoutNulls({
       ...session,
       userId: String(session.userId),
-      mfa: session.mfa ? session.mfa : undefined,
-      metadata: session.metadata ?? {},
-    };
+    });
   }
 
   async create(session: SessionRecord): Promise<void> {
