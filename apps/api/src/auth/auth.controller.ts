@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
   HttpCode,
   HttpStatus,
+  Logger,
   Post,
   Body,
 } from '@nestjs/common';
@@ -25,6 +26,8 @@ import { AuthInputValidationDto } from './dto/auth-input-validation.dto.js';
 @Public()
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private readonly credentialsService: CredentialsService,
     private readonly signInService: SignInService,
@@ -51,7 +54,11 @@ export class AuthController {
   ): Promise<SignUpResponseDto> {
     const user = await this.credentialsService.register({ email, password });
 
-    await this.emailVerificationService.send({ id: String(user.id), email });
+    try {
+      await this.emailVerificationService.send({ id: String(user.id), email });
+    } catch (error) {
+      this.logger.error('Failed to send verification email after account creation.', error);
+    }
 
     return user;
   }

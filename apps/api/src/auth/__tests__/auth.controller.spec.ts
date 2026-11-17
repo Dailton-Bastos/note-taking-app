@@ -63,6 +63,7 @@ describe('AuthController', () => {
       vi.spyOn(credentialsService, 'register').mockResolvedValue({
         id: 1,
         email: 'test@example.com',
+        emailVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -79,6 +80,7 @@ describe('AuthController', () => {
       vi.spyOn(credentialsService, 'register').mockResolvedValue({
         id: 1,
         email: 'test@example.com',
+        emailVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -94,6 +96,29 @@ describe('AuthController', () => {
         id: expect.any(String),
         email: 'test@example.com',
       });
+    });
+
+    it('should log an error if emailVerificationService.send fails', async () => {
+      const createUserDto = { email: 'test@example.com', password: 'password' };
+
+      vi.spyOn(credentialsService, 'register').mockResolvedValue({
+        id: 1,
+        email: 'test@example.com',
+        emailVerified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const error = new Error('Failed to send email');
+      vi.spyOn(emailVerificationService, 'send').mockRejectedValue(error);
+      const loggerErrorSpy = vi.spyOn(controller['logger'], 'error');
+
+      await controller.signUp(createUserDto);
+
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        'Failed to send verification email after account creation.',
+        error,
+      );
     });
   });
 
